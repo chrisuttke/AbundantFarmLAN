@@ -1,0 +1,22 @@
+127.0.0.1       localhost
+::1             localhost ip6-localhost ip6-loopback
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+
+10.0.0.1        rtr-c819hg.abundantfarmlan.net
+10.0.0.2        sw-core.abundantfarmlan.net
+10.0.0.3        aerohive1.abundantfarmlan.net
+10.0.0.4        sw-access.abundantfarmlan.net
+10.0.0.5        sw-mgmt.abundantfarmlan.net
+10.0.0.10       srv-nas.abundantfarmlan.net
+10.0.0.11       srv-miner1.abundantfarmlan.net
+10.0.0.12
+10.0.0.13       srv-miner2.abundantfarmlan.net
+10.0.0.14
+10.0.0.15
+10.0.0.16       srv-backup.abundantfarmlan.net
+10.0.0.17
+
+#--- BEGIN PVE ---
+10.0.0.254 pihole.10.0.0.254 pihole
+# --- END PVE ---
