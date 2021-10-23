@@ -1,0 +1,313 @@
+
+
+Building configuration...
+
+  
+  
+Current configuration : 5692 bytes
+!
+! Last configuration change at 16:29:57 UTC Sat Oct 23 2021 by chris
+!
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service dhcp
+!
+hostname yourname
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging buffered 51200 warnings
+!
+aaa new-model
+!
+!
+aaa authentication login local_access local
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name yourdomain.com
+ip cef
+no ipv6 cef
+!
+!
+flow record nbar-appmon
+ match ipv4 source address
+ match ipv4 destination address
+ match application name
+ collect interface output
+ collect counter bytes
+ collect counter packets
+ collect timestamp absolute first
+ collect timestamp absolute last
+!
+!
+flow monitor application-mon
+ cache timeout active 60
+ record nbar-appmon
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+chat-script lte "" "AT!CALL1" TIMEOUT 20 "OK"
+!
+!
+!
+!
+!
+license udi pid C819HG-LTE-MNA-K9 sn FTX2131Z000
+!
+!
+object-group network local_cws_net 
+!
+object-group network local_lan_subnets 
+ any
+!
+object-group network vpn_remote_subnets 
+ any
+!
+username chris privilege 15 secret 5 $1$/OTg$hcieRxvDZ0dxgQAvMjPnw1
+!
+redundancy
+!
+!
+!
+!
+!
+controller Cellular 0
+ lte modem link-recovery rssi onset-threshold -110
+ lte modem link-recovery monitor-timer 20
+ lte modem link-recovery wait-timer 10
+ lte modem link-recovery debounce-count 6
+no cdp run
+!
+zone security LAN
+zone security WAN
+zone security VPN
+zone security DMZ
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Cellular0
+ description PrimaryWANDesc_
+ ip address negotiated
+ ip nat outside
+ ip virtual-reassembly in
+ encapsulation slip
+ dialer in-band
+ dialer pool-member 1
+ dialer-group 1
+ async mode interactive
+!
+interface Cellular1
+ no ip address
+ encapsulation slip
+!
+interface FastEthernet0
+ no ip address
+!
+interface FastEthernet1
+ no ip address
+!
+interface FastEthernet2
+ no ip address
+!
+interface FastEthernet3
+ no ip address
+!
+interface GigabitEthernet0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface Vlan1
+ description $ETH_LAN$
+ ip address 10.0.0.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly in
+ ip tcp adjust-mss 1452
+!
+interface Dialer1
+ ip address negotiated
+ ip nat outside
+ ip virtual-reassembly in
+ encapsulation slip
+ dialer pool 1
+ dialer idle-timeout 0
+ dialer string lte
+ dialer persistent
+ dialer-group 1
+!
+ip forward-protocol nd
+ip http server
+ip http access-class 23
+ip http authentication local
+ip http secure-server
+ip http timeout-policy idle 60 life 86400 requests 10000
+!
+!
+ip nat inside source list 198 interface Dialer1 overload
+ip route 0.0.0.0 0.0.0.0 Dialer1
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+ip access-list extended nat-list
+ permit ip object-group local_lan_subnets any
+!
+dialer-list 1 protocol ip permit
+ipv6 ioam timestamp
+!
+access-list 23 permit 10.10.10.0 0.0.0.127
+access-list 23 permit 10.0.0.0 0.0.0.255
+access-list 198 permit ip any any
+!
+!
+!
+control-plane
+!
+!
+!
+mgcp behavior rsip-range tgcp-only
+mgcp behavior comedia-role none
+mgcp behavior comedia-check-media-src disable
+mgcp behavior comedia-sdp-force disable
+!
+mgcp profile default
+!
+!
+!
+!
+!
+!
+banner exec ^C
+% Password expiration warning.
+-----------------------------------------------------------------------
+ 
+Cisco Configuration Professional (Cisco CP) is installed on this device
+and it provides the default username "cisco" for  one-time use. If you have 
+already used the username "cisco" to login to the router and your IOS image 
+supports the "one-time" user option, then this username has already expired. 
+You will not be able to login to the router with this username after you exit 
+this session.
+ 
+It is strongly suggested that you create a new username with a privilege level 
+of 15 using the following command.
+ 
+username <myuser> privilege 15 secret 0 <mypassword>
+ 
+Replace <myuser> and <mypassword> with the username and password you 
+want to use.
+ 
+-----------------------------------------------------------------------
+^C
+banner login ^C
+-----------------------------------------------------------------------
+Cisco Configuration Professional (Cisco CP) is installed on this device.
+This feature requires the one-time use of the username "cisco" with the 
+password "cisco". These default credentials have a privilege level of 15.
+ 
+YOU MUST USE CISCO CP or the CISCO IOS CLI TO CHANGE THESE
+PUBLICLY-KNOWN CREDENTIALS
+
+Here are the Cisco IOS commands.
+
+username <myuser>  privilege 15 secret 0 <mypassword>
+no username cisco
+
+Replace <myuser> and <mypassword> with the username and password you want 
+to use. 
+
+IF YOU DO NOT CHANGE THE PUBLICLY-KNOWN CREDENTIALS, YOU WILL 
+NOT BE ABLE TO LOG INTO THE DEVICE AGAIN AFTER YOU HAVE LOGGED OFF.
+ 
+For more information about Cisco CP please follow the instructions in the
+QUICK START GUIDE for your router or go to http://www.cisco.com/go/ciscocp 
+-----------------------------------------------------------------------
+^C
+!
+line con 0
+ login authentication local_access
+ no modem enable
+line aux 0
+line 2
+ no activation-character
+ no exec
+ transport preferred none
+ transport input all
+ stopbits 1
+line 3
+ script dialer lte
+ modem InOut
+ no exec
+ transport input all
+ rxspeed 100000000
+ txspeed 50000000
+line 8
+ no exec
+ rxspeed 100000000
+ txspeed 50000000
+line vty 0 4
+ access-class 23 in
+ privilege level 15
+ login authentication local_access
+ transport input telnet ssh
+line vty 5 15
+ access-class 23 in
+ privilege level 15
+ transport input telnet ssh
+!
+scheduler allocate 20000 1000
+!
+!
+!
+!
+!
+!
+end
