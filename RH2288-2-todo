@@ -1,5 +1,2 @@
-install CPUs
-install memory
-install drives
-install proxmox 
+install proxmox (having issue with video right after DHCP)
 install xmrig
