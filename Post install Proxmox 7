@@ -1,0 +1,1 @@
+Comment out /etc/apt/sources.list.d/pve-enterprise.list or else apt wont update
